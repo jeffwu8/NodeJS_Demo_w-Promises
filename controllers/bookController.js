@@ -14,7 +14,7 @@ routes.post("/book", function(req, res) {
   var book = req.body;
   bookDao.addBook(book).then(result => {
     res.status(201);
-    res.send("Add Book Successful!");
+    res.send(result);
   })
   .catch(err => {
     res.status(400);

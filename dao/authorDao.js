@@ -1,58 +1,43 @@
 var db = require("./db");
 
-exports.getAllBooks = () =>
+exports.getAllAuthors = () =>
   new Promise((resolve, reject) => {
-    db.query("select * from book", function(err, result) {
+    db.query("select * from author", function(err, result) {
       if (err) return reject(err);
       resolve(result);
     });
   });
 
-exports.addBook = book =>
+  exports.addAuthor = author =>
   new Promise((resolve, reject) =>
     db.beginTransaction(function(err) {
       if (err) reject(err);
 
       db.query(
-        "INSERT INTO book SET ?, ?",
-        [{title: book.title}, {author_name: book.author_name}],
+        "insert into author(author_name) values(?)",
+        [author.author_name],
         function(err, result) {
           if (err) {
             db.rollback(function(err) {
               reject(err);
             });
           }
-          db.commit(
-            resolve(result)
-          );
+          db.commit(function(result) {
+            resolve(result);
+          });
         }
       );
-
-      // db.query(
-      //   "insert into book(title, author_name) values(?,?)",
-      //   [book.title, book.author_name],
-      //   function(err, result) {
-      //     if (err) {
-      //       db.rollback(function(err) {
-      //         reject(err);
-      //       });
-      //     }
-      //     db.commit(function(result) {
-      //       resolve(result);
-      //     });
-      //   }
-      // );
     })
   );
 
-exports.updateBook = (book_id, book) =>
+  exports.updateAuthor = (author_id, author) =>
   new Promise((resolve, reject) =>
     db.beginTransaction(function(err) {
       if (err) reject(err);
 
       db.query(
-        "update book set book.title = ?, book.author_name = ? where book.book_id = ?",
-        [book.title, book.author_name, book_id],
+        "update author set author.author_name = ? where author.author_id = ?",
+        [author.author_name, author_id],
         function(err, result) {
           if (err) {
             db.rollback(function(err) {
@@ -68,12 +53,12 @@ exports.updateBook = (book_id, book) =>
     })
   );
 
-exports.removeBook = book_id =>
+exports.removeAuthor = author_id =>
   new Promise((resolve, reject) => {
     db.beginTransaction(function(err) {
       if (err) return reject(err);
 
-      db.query("delete from book where book.book_id = ?", [book_id], function(
+      db.query("delete from author where author.author_id = ?", [author_id], function(
         err,
         res
       ) {
